@@ -21,7 +21,11 @@ pub fn command(tokens: &[&str]) -> Result<Command, EmployeeError> {
     }
     let person: String = trim_non_alphabetic(&tokens[1..to - 1]).join("");
     let department: String = trim_non_alphabetic(&tokens[to + 1..]).join("");
-    Ok(Command::Add { person, department })
+    return if person.is_empty() || department.is_empty() {
+        Err(EmployeeError::DontUnderstand(String::from("Missing person or department.")))
+    } else {
+        Ok(Command::Add { person, department })
+    }
 }
 
 pub fn trim_non_alphabetic<'a>(tokens: &'a [&str]) -> &'a [&'a str] {

@@ -45,14 +45,6 @@ mod tests {
     #[test]
     fn add() {
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
-            "add".parse::<Command>()
-        );
-        assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
-            "add Alice".parse::<Command>()
-        );
-        assert_eq!(
             Ok(Command::Add {
                 person: String::from("Alice"),
                 department: String::from("Administration")
@@ -72,6 +64,18 @@ mod tests {
                 department: String::from("Sales")
             }),
             "Add Amir to Sales.".parse::<Command>()
+        );
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            "add".parse::<Command>()
+        );
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            "add Alice".parse::<Command>()
+        );
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(String::from("Missing person or department."))),
+            "add to".parse::<Command>()
         );
     }
 
