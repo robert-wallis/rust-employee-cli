@@ -7,29 +7,33 @@ mod quit;
 
 #[derive(Debug, PartialEq)]
 pub enum Command {
-    Add,
-    List,
+    Add { person: String, department: String },
+    List, //(ListType),
     Quit,
 }
+
+// #[derive(Debug, PartialEq)]
+// pub enum ListType {
+//     Person(String),
+//     Department(String),
+// }
 
 impl FromStr for Command {
     type Err = EmployeeError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let tokens = tokenizer::tokenize(s);
         if tokens.is_empty() {
-            return Err(EmployeeError::EmptyInput)
+            return Err(EmployeeError::EmptyInput);
         }
         let first = tokens[0].to_lowercase();
         if add::looks_like(&first) {
-            Ok(add::command())
+            add::command(&tokens)
         } else if list::looks_like(&first) {
             Ok(list::command())
         } else if quit::looks_like(&first) {
             Ok(quit::command())
         } else {
-            Err(EmployeeError::DontUnderstand {
-                command: String::from(s),
-            })
+            Err(EmployeeError::DontUnderstand(format!("{} is not add, list or quit.", first)))
         }
     }
 }
@@ -37,14 +41,37 @@ impl FromStr for Command {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn add() {
-        assert_eq!(Ok(Command::Add), "add".parse::<Command>());
-        assert_eq!(Ok(Command::Add), "Add".parse::<Command>());
-        assert_eq!(Ok(Command::Add), "add Alice".parse::<Command>());
         assert_eq!(
-            Ok(Command::Add),
+            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            "add".parse::<Command>()
+        );
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            "add Alice".parse::<Command>()
+        );
+        assert_eq!(
+            Ok(Command::Add {
+                person: String::from("Alice"),
+                department: String::from("Administration")
+            }),
             "add Alice to Administration".parse::<Command>()
+        );
+        assert_eq!(
+            Ok(Command::Add {
+                person: String::from("Sally"),
+                department: String::from("Engineering")
+            }),
+            "Add Sally to Engineering".parse::<Command>()
+        );
+        assert_eq!(
+            Ok(Command::Add {
+                person: String::from("Amir"),
+                department: String::from("Sales")
+            }),
+            "Add Amir to Sales.".parse::<Command>()
         );
     }
 

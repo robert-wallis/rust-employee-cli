@@ -5,7 +5,7 @@ use std::fmt;
 pub enum EmployeeError {
     IO(String),
     EmptyInput,
-    DontUnderstand { command: String },
+    DontUnderstand(String),
 }
 
 impl From<std::io::Error> for EmployeeError {
@@ -19,8 +19,8 @@ impl fmt::Display for EmployeeError {
         match self {
             EmployeeError::IO(err) => write!(f, "{}", err),
             EmployeeError::EmptyInput => write!(f, "Command was empty."),
-            EmployeeError::DontUnderstand { command } => {
-                write!(f, "Command not understood: \"{}\"", command.trim_right())
+            EmployeeError::DontUnderstand(reason) => {
+                write!(f, "Command not understood. {}", reason)
             }
         }
     }
