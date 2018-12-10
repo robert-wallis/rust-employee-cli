@@ -25,6 +25,9 @@ pub fn command(tokens: &[&str]) -> Result<Command, EmployeeError> {
 }
 
 pub fn trim_non_alphabetic<'a>(tokens: &'a [&str]) -> &'a [&'a str] {
+    if tokens.is_empty() {
+        return &tokens;
+    }
     let mut start = 0;
     let mut end = tokens.len() - 1;
     for (i, token) in tokens.iter().enumerate() {

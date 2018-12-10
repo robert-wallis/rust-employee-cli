@@ -33,7 +33,7 @@ impl FromStr for Command {
         } else if quit::looks_like(&first) {
             Ok(quit::command())
         } else {
-            Err(EmployeeError::DontUnderstand(format!("{} is not add, list or quit.", first)))
+            Err(EmployeeError::DontUnderstand(format!("Try add, list or quit.")))
         }
     }
 }

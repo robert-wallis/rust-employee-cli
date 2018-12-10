@@ -25,8 +25,8 @@ fn main() -> Result<(), EmployeeError> {
         let line = read_line()?;
         match line.parse::<command::Command>() {
             Ok(cmd) => match cmd {
-                Command::Add { person, department } => println!("Adding {} to {}", person, department),
-                Command::List => println!("Listing"),
+                Command::Add { person, department } => println!("Adding {} to {}.", person, department),
+                Command::List => println!("Listing."),
                 Command::Quit => break,
             },
             Err(err) => match err {
