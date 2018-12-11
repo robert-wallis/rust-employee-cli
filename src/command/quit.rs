@@ -9,3 +9,17 @@ pub fn looks_like(first: &str) -> bool {
 pub fn command() -> Command {
     Command::Quit
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quit() {
+        use super::Command::Quit;
+        assert_eq!(Ok(Quit), "quit".parse::<Command>());
+        assert_eq!(Ok(Quit), "Quit".parse::<Command>());
+        assert_eq!(Ok(Quit), "q".parse::<Command>());
+        assert_eq!(Ok(Quit), "exit".parse::<Command>());
+    }
+}
