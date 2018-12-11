@@ -1,3 +1,5 @@
+// Copyright (C) 2018 Robert A. Wallis, All Rights Reserved.
+
 use super::error::EmployeeError;
 use super::tokenizer;
 use std::str::FromStr;
