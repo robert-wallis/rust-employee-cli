@@ -8,15 +8,15 @@ mod quit;
 #[derive(Debug, PartialEq)]
 pub enum Command {
     Add { person: String, department: String },
-    List, //(ListType),
+    List(ListType),
     Quit,
 }
 
-// #[derive(Debug, PartialEq)]
-// pub enum ListType {
-//     Person(String),
-//     Department(String),
-// }
+#[derive(Debug, PartialEq)]
+pub enum ListType {
+    Noun(String),
+    Everything,
+}
 
 impl FromStr for Command {
     type Err = EmployeeError;
@@ -29,11 +29,13 @@ impl FromStr for Command {
         if add::looks_like(&first) {
             add::command(&tokens)
         } else if list::looks_like(&first) {
-            Ok(list::command())
+            Ok(list::command(&tokens))
         } else if quit::looks_like(&first) {
             Ok(quit::command())
         } else {
-            Err(EmployeeError::DontUnderstand(format!("Try add, list or quit.")))
+            Err(EmployeeError::DontUnderstand(
+                "Try add, list or quit.".to_string(),
+            ))
         }
     }
 }
@@ -66,32 +68,31 @@ mod tests {
             "Add Amir to Sales.".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            Err(EmployeeError::DontUnderstand(String::from(
+                "Missing \"to\" seperator. (ex. Add Alice to Engineering)."
+            ))),
             "add".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from("Missing \"to\" seperator. (ex. Add Alice to Engineering)."))),
+            Err(EmployeeError::DontUnderstand(String::from(
+                "Missing \"to\" seperator. (ex. Add Alice to Engineering)."
+            ))),
             "add Alice".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from("Missing person or department."))),
+            Err(EmployeeError::DontUnderstand(String::from(
+                "Missing person or department."
+            ))),
             "add to".parse::<Command>()
         );
     }
 
     #[test]
-    fn list() {
-        assert_eq!(Ok(Command::List), "list".parse::<Command>());
-        assert_eq!(Ok(Command::List), "List".parse::<Command>());
-        assert_eq!(Ok(Command::List), "show".parse::<Command>());
-        assert_eq!(Ok(Command::List), "display".parse::<Command>());
-    }
-
-    #[test]
     fn quit() {
-        assert_eq!(Ok(Command::Quit), "quit".parse::<Command>());
-        assert_eq!(Ok(Command::Quit), "Quit".parse::<Command>());
-        assert_eq!(Ok(Command::Quit), "q".parse::<Command>());
-        assert_eq!(Ok(Command::Quit), "exit".parse::<Command>());
+        use super::Command::Quit;
+        assert_eq!(Ok(Quit), "quit".parse::<Command>());
+        assert_eq!(Ok(Quit), "Quit".parse::<Command>());
+        assert_eq!(Ok(Quit), "q".parse::<Command>());
+        assert_eq!(Ok(Quit), "exit".parse::<Command>());
     }
 }
