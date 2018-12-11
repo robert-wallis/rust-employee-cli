@@ -4,6 +4,9 @@ use super::tokenizer;
 use super::Command;
 use super::EmployeeError;
 
+const MISSING_TO: &str = "Missing \"to\" seperator. (ex. Add Alice to Engineering).";
+const MISSING_NOUN: &str = "Missing person or department.";
+
 pub fn looks_like(first: &str) -> bool {
     first == "add"
 }
@@ -16,16 +19,12 @@ pub fn command(tokens: &[&str]) -> Result<Command, EmployeeError> {
         }
     }
     if to == 0 {
-        return Err(EmployeeError::DontUnderstand(String::from(
-            "Missing \"to\" seperator. (ex. Add Alice to Engineering).",
-        )));
+        return Err(EmployeeError::DontUnderstand(String::from(MISSING_TO)));
     }
     let person: String = tokenizer::trim_non_alphabetic(&tokens[1..to - 1]).join("");
     let department: String = tokenizer::trim_non_alphabetic(&tokens[to + 1..]).join("");
     if person.is_empty() || department.is_empty() {
-        Err(EmployeeError::DontUnderstand(String::from(
-            "Missing person or department.",
-        )))
+        Err(EmployeeError::DontUnderstand(String::from(MISSING_NOUN)))
     } else {
         Ok(Command::Add { person, department })
     }
@@ -59,21 +58,15 @@ mod tests {
             "Add Amir to Sales.".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from(
-                "Missing \"to\" seperator. (ex. Add Alice to Engineering)."
-            ))),
+            Err(EmployeeError::DontUnderstand(String::from(MISSING_TO))),
             "add".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from(
-                "Missing \"to\" seperator. (ex. Add Alice to Engineering)."
-            ))),
+            Err(EmployeeError::DontUnderstand(String::from(MISSING_TO))),
             "add Alice".parse::<Command>()
         );
         assert_eq!(
-            Err(EmployeeError::DontUnderstand(String::from(
-                "Missing person or department."
-            ))),
+            Err(EmployeeError::DontUnderstand(String::from(MISSING_NOUN))),
             "add to".parse::<Command>()
         );
     }

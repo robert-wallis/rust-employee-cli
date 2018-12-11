@@ -19,9 +19,7 @@ impl fmt::Display for EmployeeError {
         match self {
             EmployeeError::IO(err) => write!(f, "{}", err),
             EmployeeError::EmptyInput => write!(f, "Command was empty."),
-            EmployeeError::DontUnderstand(reason) => {
-                write!(f, "Command not understood. {}", reason)
-            }
+            EmployeeError::DontUnderstand(hint) => write!(f, "Command not understood. {}", hint),
         }
     }
 }

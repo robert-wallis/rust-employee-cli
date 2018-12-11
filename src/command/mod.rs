@@ -5,6 +5,8 @@ mod add;
 mod list;
 mod quit;
 
+const USAGE: &str = "Try add, list, or quit.";
+
 #[derive(Debug, PartialEq)]
 pub enum Command {
     Add { person: String, department: String },
@@ -33,9 +35,25 @@ impl FromStr for Command {
         } else if quit::looks_like(&first) {
             Ok(quit::command())
         } else {
-            Err(EmployeeError::DontUnderstand(
-                "Try add, list or quit.".to_string(),
-            ))
+            Err(EmployeeError::DontUnderstand(USAGE.to_string()))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unknown() {
+        assert_eq!(Err(EmployeeError::EmptyInput), "".parse::<Command>());
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(USAGE.to_string())),
+            " ".parse::<Command>()
+        );
+        assert_eq!(
+            Err(EmployeeError::DontUnderstand(USAGE.to_string())),
+            "beep".parse::<Command>()
+        );
     }
 }
