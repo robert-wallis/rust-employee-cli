@@ -12,23 +12,38 @@
 /// > or all people in the company by department,
 /// > sorted alphabetically.
 /// > https://doc.rust-lang.org/book/ch08-03-hash-maps.html
-use std::io;
+use std::io::{self, Write};
 
 mod command;
-use self::command::Command;
+use self::command::{Command, ListType};
 mod error;
 use self::error::EmployeeError;
+mod store;
 mod tokenizer;
+use self::store::{Department, Person, Store};
 
 fn main() -> Result<(), EmployeeError> {
+    let mut store = Store::new();
     loop {
         let line = read_line()?;
         match line.parse::<command::Command>() {
             Ok(cmd) => match cmd {
                 Command::Add { person, department } => {
-                    println!("Adding {} to {}.", person, department)
+                    let person = Person { name: person };
+                    let department = Department { name: department };
+                    store.add_assignment(person, &department);
                 }
-                Command::List(list_type) => println!("Listing. {:?}", list_type),
+                Command::List(list_type) => match list_type {
+                    ListType::Noun(noun) => {
+                        let department = Department { name: noun };
+                        print_department(&department, &store.list_department(&department));
+                    }
+                    ListType::Everything => {
+                        for (department, team) in store.list() {
+                            print_department(department, &team);
+                        }
+                    }
+                },
                 Command::Quit => break,
             },
             Err(err) => match err {
@@ -42,6 +57,14 @@ fn main() -> Result<(), EmployeeError> {
 
 fn read_line() -> io::Result<String> {
     let mut line = String::new();
+    io::stdout().write_all(b"> ")?;
+    io::stdout().flush()?;
     io::stdin().read_line(&mut line)?;
     Ok(line)
+}
+
+fn print_department(department: &Department, people: &[&Person]) {
+    for person in people {
+        println!("{} in {}", person.name, department.name);
+    }
 }
