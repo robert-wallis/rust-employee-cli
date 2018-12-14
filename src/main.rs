@@ -20,7 +20,7 @@ mod error;
 use self::error::EmployeeError;
 mod store;
 mod tokenizer;
-use self::store::{Department, Person, Store};
+use self::store::{Store, department::Department, person::Person};
 
 fn main() -> Result<(), EmployeeError> {
     let mut store = Store::new();
