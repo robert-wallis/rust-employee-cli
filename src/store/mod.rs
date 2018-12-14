@@ -24,23 +24,29 @@ impl Store {
             .or_insert_with(|| vec![]);
         if !(*team).contains(&person) {
             (*team).push(person);
+            (*team).sort_by(|a, b| a.name.cmp(&b.name));
         }
     }
 
     pub fn list_department(&self, department: &Department) -> Vec<&Person> {
         match self.departments.get(&department) {
             None => Vec::new(),
-            Some(team) => team.iter().collect::<Vec<&Person>>(),
+            Some(team) => team_vec(&team),
         }
     }
 
     pub fn list(&self) -> Vec<(&Department, Vec<&Person>)> {
         let mut all = Vec::new();
         for (department, team) in self.departments.iter() {
-            all.push((department, team.iter().collect::<Vec<&Person>>()));
+            all.push((department, team_vec(&team)));
         }
+        all.sort_by(|a, b| a.0.name.cmp(&b.0.name));
         all
     }
+}
+
+fn team_vec<'a>(team: &'a [Person]) -> Vec<&'a Person> {
+    team.iter().collect::<Vec<&'a Person>>()
 }
 
 #[cfg(test)]
